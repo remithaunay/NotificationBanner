@@ -16,11 +16,14 @@
  
  */
 
+import UIKit
+
 public enum BannerStyle {
     case danger
     case info
     case none
     case success
     case warning
+    case custom(UIImage)
 }
 
