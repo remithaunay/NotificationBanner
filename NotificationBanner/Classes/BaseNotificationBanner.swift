@@ -97,8 +97,8 @@ public class BaseNotificationBanner: UIView {
     /// The default padding between edges and views
     internal var padding: CGFloat = 15.0
     
-    /// The view controller to display the banner on. This is useful if you are wanting to display a banner underneath a navigation bar
-    internal weak var parentViewController: UIViewController?
+    /// The view to display the banner on. This is useful if you are wanting to display a banner underneath a navigation bar
+    internal weak var parentView: UIView?
     
     /// If this is not nil, then this height will be used instead of the auto calculated height
     internal var customBannerHeight: CGFloat?
@@ -201,7 +201,7 @@ public class BaseNotificationBanner: UIView {
     private func updateSpacerViewHeight(make: ConstraintMaker? = nil) {
         let finalHeight = NotificationBannerUtilities.isiPhoneX()
             && UIApplication.shared.statusBarOrientation.isPortrait
-            && parentViewController == nil ? 40.0 : 10.0
+            && parentView == nil ? 40.0 : 10.0
         if let make = make {
             make.height.equalTo(finalHeight)
         } else {
@@ -243,14 +243,14 @@ public class BaseNotificationBanner: UIView {
         Places a NotificationBanner on the queue and shows it if its the first one in the queue
         - parameter queuePosition: The position to show the notification banner. If the position is .front, the
         banner will be displayed immediately
-        - parameter viewController: The view controller to display the notifification banner on. If nil, it will
-        be placed on the main app window
         - parameter bannerPosition: The position the notification banner should slide in from
+        - parameter view: The view to display the notifification banner on. If nil, it will
+        be placed on the main app window
     */
     public func show(queuePosition: QueuePosition = .back,
                      bannerPosition: BannerPosition = .top,
-                     on viewController: UIViewController? = nil) {
-        parentViewController = viewController
+                     on view: UIView? = nil) {
+        parentView = view
         show(placeOnQueue: true, queuePosition: queuePosition, bannerPosition: bannerPosition)
     }
     
@@ -269,7 +269,7 @@ public class BaseNotificationBanner: UIView {
             self.bannerPosition = bannerPosition
             createBannerConstraints(for: bannerPosition)
             bannerPositionFrame = BannerPositionFrame(bannerPosition: bannerPosition,
-                                                      bannerWidth: appWindow.frame.width,
+                                                      bannerWidth: bannerWidth(),
                                                       bannerHeight: bannerHeight,
                                                       maxY: maximumYPosition())
         }
@@ -287,14 +287,14 @@ public class BaseNotificationBanner: UIView {
         } else {
             self.frame = bannerPositionFrame.startFrame
             
-            if let parentViewController = parentViewController {
-                parentViewController.view.addSubview(self)
+            if let parentView = parentView {
+                parentView.addSubview(self)
                 if statusBarShouldBeShown() {
                     appWindow.windowLevel = UIWindowLevelNormal
                 }
             } else {
                 appWindow.addSubview(self)
-                if statusBarShouldBeShown() && !(parentViewController == nil && bannerPosition == .top) {
+                if statusBarShouldBeShown() && !(parentView == nil && bannerPosition == .top) {
                     appWindow.windowLevel = UIWindowLevelNormal
                 } else {
                     appWindow.windowLevel = UIWindowLevelStatusBar + 1
@@ -358,7 +358,7 @@ public class BaseNotificationBanner: UIView {
         updateSpacerViewHeight()
         self.frame = CGRect(x: self.frame.origin.x, y: self.frame.origin.y, width: appWindow.frame.width, height: bannerHeight)
         bannerPositionFrame = BannerPositionFrame(bannerPosition: bannerPosition,
-                                                  bannerWidth: appWindow.frame.width,
+                                                  bannerWidth: bannerWidth(),
                                                   bannerHeight: bannerHeight,
                                                   maxY: maximumYPosition())
     }
@@ -393,7 +393,7 @@ public class BaseNotificationBanner: UIView {
     private func statusBarShouldBeShown() -> Bool {
         
         for banner in bannerQueue.banners {
-            if (banner.parentViewController == nil && banner.bannerPosition == .top) {
+            if (banner.parentView == nil && banner.bannerPosition == .top) {
                 return false
             }
         }
@@ -406,10 +406,22 @@ public class BaseNotificationBanner: UIView {
     */
  
     private func maximumYPosition() -> CGFloat {
-        if let parentViewController = parentViewController {
-            return parentViewController.view.frame.height
+        if let parentView = parentView {
+            return parentView.frame.height
         } else {
             return appWindow.frame.height
+        }
+    }
+
+    /**
+        Calculates the width that a notification banner can take
+    */
+
+    private func bannerWidth() -> CGFloat {
+        if let parentView = parentView {
+            return parentView.bounds.width
+        } else {
+            return appWindow.bounds.width
         }
     }
 
@@ -420,7 +432,7 @@ public class BaseNotificationBanner: UIView {
     internal func shouldAdjustForIphoneX() -> Bool {
         return NotificationBannerUtilities.isiPhoneX()
             && UIApplication.shared.statusBarOrientation.isPortrait
-            && parentViewController == nil
+            && parentView == nil
     }
     /**
         Updates the scrolling marquee label duration

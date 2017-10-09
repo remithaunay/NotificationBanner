@@ -125,7 +125,7 @@ extension ExampleViewController: ExampleViewDelegate {
                 self.showAlert(title: "Banner Notification Tapped", message: "")
             }
             
-            banner.show(queuePosition: selectedQueuePosition(), bannerPosition: selectedBannerPosition(), on: self)
+            banner.show(queuePosition: selectedQueuePosition(), bannerPosition: selectedBannerPosition(), on: view)
         case 5:
             // Basic Warning Notification with Custom Color
             let banner = NotificationBanner(title: "Basic Notification",
@@ -219,7 +219,7 @@ extension ExampleViewController: ExampleViewDelegate {
             banner.delegate = self
             banner.show(queuePosition: selectedQueuePosition(),
                         bannerPosition: selectedBannerPosition(),
-                        on: self)
+                        on: view)
         case 5:
             // Status Bar Attributed Title Notification
             let title = "Custom Status Bar Notification"
