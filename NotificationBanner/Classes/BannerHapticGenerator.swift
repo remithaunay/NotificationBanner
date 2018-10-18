@@ -33,7 +33,7 @@ open class BannerHapticGenerator: NSObject {
      */
     open class func generate(_ haptic: BannerHaptic) {
         
-        var style: UIImpactFeedbackStyle!
+        var style: UIImpactFeedbackGenerator.FeedbackStyle!
         
         switch haptic {
         case .light:

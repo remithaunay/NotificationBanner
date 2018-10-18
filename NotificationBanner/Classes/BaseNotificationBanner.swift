@@ -158,7 +158,7 @@ public class BaseNotificationBanner: UIView {
     
     deinit {
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name.UIDeviceOrientationDidChange,
+                                                  name: UIDevice.orientationDidChangeNotification,
                                                   object: nil)
     }
     
@@ -233,7 +233,7 @@ public class BaseNotificationBanner: UIView {
             
             self.bannerQueue.showNext(callback: { (isEmpty) in
                 if isEmpty || self.statusBarShouldBeShown() {
-                    self.appWindow.windowLevel = UIWindowLevelNormal
+                    self.appWindow.windowLevel = UIWindow.Level.normal
                 }
             })
         }
@@ -275,11 +275,11 @@ public class BaseNotificationBanner: UIView {
         }
         
         NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name.UIDeviceOrientationDidChange,
+                                                  name: UIDevice.orientationDidChangeNotification,
                                                   object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(onOrientationChanged),
-                                               name: NSNotification.Name.UIDeviceOrientationDidChange,
+                                               name: UIDevice.orientationDidChangeNotification,
                                                object: nil)
         
         if placeOnQueue {
@@ -290,14 +290,14 @@ public class BaseNotificationBanner: UIView {
             if let parentView = parentView {
                 parentView.addSubview(self)
                 if statusBarShouldBeShown() {
-                    appWindow.windowLevel = UIWindowLevelNormal
+                    appWindow.windowLevel = UIWindow.Level.normal
                 }
             } else {
                 appWindow.addSubview(self)
                 if statusBarShouldBeShown() && !(parentView == nil && bannerPosition == .top) {
-                    appWindow.windowLevel = UIWindowLevelNormal
+                    appWindow.windowLevel = UIWindow.Level.normal
                 } else {
-                    appWindow.windowLevel = UIWindowLevelStatusBar + 1
+                    appWindow.windowLevel = UIWindow.Level.statusBar + 1
                 }
             }
             
